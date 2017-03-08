@@ -1,7 +1,7 @@
 # Dot: The Video Game
 A simple clone of an old turn-based stategy game.
 
-![Dot: The Video Game](https://github.com/stephanbaker/DotTheVideoGame/blob/master/screenshot.png "Dot: The Video Game")
+![Dot: The Video Game](https://github.com/stephanbaker/DotTheVideoGame/blob/master/dot.gif "Dot: The Video Game")
 
 ## How to play
 - Clone the repo and load `index.html` in your browser.
