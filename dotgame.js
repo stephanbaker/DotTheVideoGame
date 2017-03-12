@@ -13,9 +13,11 @@ class Board extends THREE.Object3D {
         this.height = this.width;
         this.tokenSize = (this.width * 0.9) / this.size;
         this.spacing = (this.width * 0.1) / this.size;
+        this.offsetx = (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+        this.offsety = (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+        this.position.x -= this.offsetx;
+        this.position.y -= this.offsety;
         this.reset();
-        this.position.x -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
-        this.position.y -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
     }
 
     reset() {
@@ -27,6 +29,8 @@ class Board extends THREE.Object3D {
         for(var i=0; i<this.size; i++) {
             for(var j=0; j<this.size; j++) {
                 var token = new Token(this.tokenSize, {x:i, y:j});
+                token.position.x = this.offsetx;
+                token.position.y = this.offsety;
                 token.initPosition.x = i * (this.spacing + this.tokenSize);
                 token.initPosition.y = j * (this.spacing + this.tokenSize);
                 token.scale.x = 0.2;
@@ -113,7 +117,7 @@ class Board extends THREE.Object3D {
         return count;
     }
 
-    construct(callback, duration = 2000) { 
+    construct(callback, duration = 1000) { 
         if(!this.tokens) {
             return;
         }
@@ -146,7 +150,7 @@ class Board extends THREE.Object3D {
 
             callback();
         }, duration);
-
+        
         this.tokens.forEach((token) => {
             var resizeTime = 0.2 * duration;
             var moveTime = 0.8 * duration;
