@@ -22,8 +22,8 @@ class Game {
         this.selectedDestination = null;
         this.numberOfTurns = 0;
         this.ui = new UI();
-        this.ui.setBackgroundColor(Colors.Black);
-        this.ui.setBaseTextColor(Colors.White);
+        this.ui.setBackgroundColor(Colors.Background);
+        this.ui.setBaseTextColor(Colors.PrimaryText);
 
         this.scores = [];
         for(var i=0; i<numberOfPlayers; i++) {
@@ -31,7 +31,7 @@ class Game {
         }
         
         this.ui.setMessage(this.state);
-        this.ui.setMessageColor(0xFFFFFF);
+        this.ui.setMessageColor(Colors.PrimaryText);
         this.ui.setScoreOneColor(getPlayer(0).color);
         this.ui.setScoreTwoColor(getPlayer(1).color);
     }
@@ -44,7 +44,7 @@ class Game {
         switch(this.state) {
             case states.SelectToken:
                 if(this.tokenOwnedByCurrentPlayer(token)) {
-                    token.highlight(0x00FF00);
+                    token.highlight(Colors.HighlightedToken);
                 }
                 break;
             case states.SelectLocation:

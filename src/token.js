@@ -1,9 +1,6 @@
 /*jshint esversion: 6 */
 const Colors = require('./colors.js').Colors;
 
-var tokenBaseColor = 0xAAAAAA;
-var tokenSelectedColor = 0xFF00FF;
-
 var TokenState = {
     Vacant: "Vacant",
     Occupied: "Occupied",
@@ -21,7 +18,7 @@ class Token extends THREE.Mesh {
         this.location = location;
         this.geometry = new THREE.BoxGeometry( this.size, this.size, this.size );
         this.material = new THREE.MeshPhongMaterial( {
-            color: tokenBaseColor,
+            color: Colors.Token,
             side: THREE.DoubleSide,
             shading: THREE.FlatShading
         });
@@ -29,7 +26,7 @@ class Token extends THREE.Mesh {
         this.state = TokenState.Vacant;
         this.selected = false;
         this.highlighted = false;
-        this.highlightColor = tokenBaseColor;
+        this.highlightColor = Colors.Token;
         this.occupant = null;
 
         this.initPosition = {x:0, y:0, z:0};
@@ -75,20 +72,25 @@ class Token extends THREE.Mesh {
     }
 
     updateColor() {
-        var color = tokenBaseColor;
+        var color = Colors.Token;
         if(this.selected) {
-            color = tokenSelectedColor;
+            console.log("Selected");
+            color = Colors.SelectedToken;
         } else if(this.highlighted) {
-            color = this.highlightColor;
+            console.log("Highlighted");
+            color = Colors.HighlightedToken;
         } else {
             switch(this.state) {
                 case TokenState.Occupied:
+                    console.log("Occupied");
                     color = this.occupant.color;
                     break;
                 case TokenState.Selected:
-                    color = tokenSelectedColor;
+                    console.log("Selected State");
+                    color = Colors.SelectedToken;
                     break;
                 default:
+                    console.log("Default");
                     break;
             }
         }

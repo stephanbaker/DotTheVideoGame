@@ -15,7 +15,7 @@ class UI {
         this.body.style.backgroundColor = colorToString(color);
     }
 
-    setBaseTextColor(color) {
+    setBaseTextColor(color) { 
         this.body.style.color = colorToString(color);
     }
 

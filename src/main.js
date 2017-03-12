@@ -6,9 +6,6 @@ var getPlayer = require('./player.js').getPlayer;
 var TokenState = require('./token.js').TokenState;
 var Game = require('./game.js').Game;
 
-var lightColor = 0xFFFFFF;
-var backgroundColor = Colors.Black;
-
 var canvas = document.getElementById('scene');
 canvas.width  = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
@@ -23,11 +20,10 @@ var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, h
 camera.position.z = 500;
 
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.setClearColor(backgroundColor);
+renderer.setClearColor(Colors.Background);
 renderer.setViewport(0, 0, width, height);
 
-var light = new THREE.DirectionalLight( lightColor, 1 );
-light.position.set( 200,200,200 ).normalize();
+var light = new THREE.AmbientLight( Colors.Lighting );
 scene.add( light );
 
 // Setup the game

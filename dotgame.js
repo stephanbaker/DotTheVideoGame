@@ -162,13 +162,28 @@ class Board extends THREE.Object3D {
 exports.Board = Board;
 },{"./player.js":5,"./token.js":6}],2:[function(require,module,exports){
 /*jshint esversion: 6 */
+const Palette = {
+    LightPink: 0xF3EAEA,
+    DarkPink: 0xE2BDBD,
+    Blue: 0x5DBEE0,
+    Red: 0xC86B6B,
+    Black: 0x000000,
+    White: 0xFFFFFF,
+    LightGray: 0xDDDDDD,
+    DarkGray: 0x333333,
+    Magenta: 0xFF00FF,
+    Yellow: 0xFFFF00
+};
+
 const Colors = {
-    LightPink: 0xF3EAEA, //(243,234,234)
-    DarkPink: 0xE2BDBD, //(226,189,189)
-    Blue: 0x5DBEE0, //(93,190,224)
-    Red: 0xC86B6B, //(200,107,107)
-    Black: 0x293B3B, //(41,59,59)
-    White: 0xFFFFFF //(255,2555,255)
+    Blue: Palette.Blue, 
+    Red: Palette.Red, 
+    Background: Palette.White,
+    PrimaryText: Palette.DarkGray,
+    Token: Palette.LightGray,
+    SelectedToken: Palette.Magenta,
+    HighlightedToken: Palette.Yellow,
+    Lighting: Palette.White
 };
 
 exports.Colors = Colors;
@@ -197,8 +212,8 @@ class Game {
         this.selectedDestination = null;
         this.numberOfTurns = 0;
         this.ui = new UI();
-        this.ui.setBackgroundColor(Colors.Black);
-        this.ui.setBaseTextColor(Colors.White);
+        this.ui.setBackgroundColor(Colors.Background);
+        this.ui.setBaseTextColor(Colors.PrimaryText);
 
         this.scores = [];
         for(var i=0; i<numberOfPlayers; i++) {
@@ -206,7 +221,7 @@ class Game {
         }
         
         this.ui.setMessage(this.state);
-        this.ui.setMessageColor(0xFFFFFF);
+        this.ui.setMessageColor(Colors.PrimaryText);
         this.ui.setScoreOneColor(getPlayer(0).color);
         this.ui.setScoreTwoColor(getPlayer(1).color);
     }
@@ -219,7 +234,7 @@ class Game {
         switch(this.state) {
             case states.SelectToken:
                 if(this.tokenOwnedByCurrentPlayer(token)) {
-                    token.highlight(0x00FF00);
+                    token.highlight(Colors.HighlightedToken);
                 }
                 break;
             case states.SelectLocation:
@@ -357,9 +372,6 @@ var getPlayer = require('./player.js').getPlayer;
 var TokenState = require('./token.js').TokenState;
 var Game = require('./game.js').Game;
 
-var lightColor = 0xFFFFFF;
-var backgroundColor = Colors.Black;
-
 var canvas = document.getElementById('scene');
 canvas.width  = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
@@ -374,11 +386,10 @@ var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, h
 camera.position.z = 500;
 
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.setClearColor(backgroundColor);
+renderer.setClearColor(Colors.Background);
 renderer.setViewport(0, 0, width, height);
 
-var light = new THREE.DirectionalLight( lightColor, 1 );
-light.position.set( 200,200,200 ).normalize();
+var light = new THREE.AmbientLight( Colors.Lighting );
 scene.add( light );
 
 // Setup the game
@@ -467,9 +478,6 @@ exports.getPlayer = getPlayer;
 /*jshint esversion: 6 */
 const Colors = require('./colors.js').Colors;
 
-var tokenBaseColor = 0xAAAAAA;
-var tokenSelectedColor = 0xFF00FF;
-
 var TokenState = {
     Vacant: "Vacant",
     Occupied: "Occupied",
@@ -487,7 +495,7 @@ class Token extends THREE.Mesh {
         this.location = location;
         this.geometry = new THREE.BoxGeometry( this.size, this.size, this.size );
         this.material = new THREE.MeshPhongMaterial( {
-            color: tokenBaseColor,
+            color: Colors.Token,
             side: THREE.DoubleSide,
             shading: THREE.FlatShading
         });
@@ -495,7 +503,7 @@ class Token extends THREE.Mesh {
         this.state = TokenState.Vacant;
         this.selected = false;
         this.highlighted = false;
-        this.highlightColor = tokenBaseColor;
+        this.highlightColor = Colors.Token;
         this.occupant = null;
 
         this.initPosition = {x:0, y:0, z:0};
@@ -541,20 +549,25 @@ class Token extends THREE.Mesh {
     }
 
     updateColor() {
-        var color = tokenBaseColor;
+        var color = Colors.Token;
         if(this.selected) {
-            color = tokenSelectedColor;
+            console.log("Selected");
+            color = Colors.SelectedToken;
         } else if(this.highlighted) {
-            color = this.highlightColor;
+            console.log("Highlighted");
+            color = Colors.HighlightedToken;
         } else {
             switch(this.state) {
                 case TokenState.Occupied:
+                    console.log("Occupied");
                     color = this.occupant.color;
                     break;
                 case TokenState.Selected:
-                    color = tokenSelectedColor;
+                    console.log("Selected State");
+                    color = Colors.SelectedToken;
                     break;
                 default:
+                    console.log("Default");
                     break;
             }
         }
@@ -596,7 +609,7 @@ class UI {
         this.body.style.backgroundColor = colorToString(color);
     }
 
-    setBaseTextColor(color) {
+    setBaseTextColor(color) { 
         this.body.style.color = colorToString(color);
     }
 
