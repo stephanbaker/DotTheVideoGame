@@ -74,23 +74,18 @@ class Token extends THREE.Mesh {
     updateColor() {
         var color = Colors.Token;
         if(this.selected) {
-            console.log("Selected");
             color = Colors.SelectedToken;
         } else if(this.highlighted) {
-            console.log("Highlighted");
             color = Colors.HighlightedToken;
         } else {
             switch(this.state) {
                 case TokenState.Occupied:
-                    console.log("Occupied");
                     color = this.occupant.color;
                     break;
                 case TokenState.Selected:
-                    console.log("Selected State");
                     color = Colors.SelectedToken;
                     break;
                 default:
-                    console.log("Default");
                     break;
             }
         }

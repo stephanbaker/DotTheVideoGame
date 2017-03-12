@@ -13,6 +13,16 @@ class Board extends THREE.Object3D {
         this.height = this.width;
         this.tokenSize = (this.width * 0.9) / this.size;
         this.spacing = (this.width * 0.1) / this.size;
+        this.reset();
+        this.position.x -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+        this.position.y -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+    }
+
+    reset() {
+        while(this.children.length > 0) {
+            this.remove(this.children[0]);
+        }
+        
         this.tokens = [];
         for(var i=0; i<this.size; i++) {
             for(var j=0; j<this.size; j++) {
@@ -26,9 +36,6 @@ class Board extends THREE.Object3D {
                 this.add( token );
             }
         }
-
-        this.position.x -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
-        this.position.y -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
     }
 
     getTokens() {
@@ -111,7 +118,11 @@ class Board extends THREE.Object3D {
             return;
         }
 
-        window.setTimeout(() => {
+        if(this.constructionTimeout) {
+            window.clearTimeout(this.constructionTimeout);
+        }
+
+        this.constructionTimeout = window.setTimeout(() => {
             var corner1 = 0;
             var corner2 = this.size - 1;
             var corner3 = this.size * (this.size - 1);
@@ -147,7 +158,6 @@ class Board extends THREE.Object3D {
             }, Math.random() * (moveTime - 200) + 200);
             move.easing = TWEEN.Easing.Quadratic.InOut;
             move.chain(resize);
-            // move.onComplete(() => {callback();});
             move.start();
         });
     }
@@ -206,27 +216,31 @@ class Game {
     constructor(numberOfPlayers, board) {
         this.numberOfPlayers = numberOfPlayers;
         this.board = board;
-        this.playerIndex = 0;
-        this.state = states.StartGame;
-        this.selectedTarget = null;
-        this.selectedDestination = null;
-        this.numberOfTurns = 0;
         this.ui = new UI();
         this.ui.setBackgroundColor(Colors.Background);
         this.ui.setBaseTextColor(Colors.PrimaryText);
-
-        this.scores = [];
-        for(var i=0; i<numberOfPlayers; i++) {
-            this.scores.push(0);
-        }
         
-        this.ui.setMessage(this.state);
         this.ui.setMessageColor(Colors.PrimaryText);
         this.ui.setScoreOneColor(getPlayer(0).color);
         this.ui.setScoreTwoColor(getPlayer(1).color);
     }
 
-    start() {
+    reset() {
+        this.playerIndex = 0;
+        this.state = states.StartGame;
+        this.ui.setMessage(this.state);
+        this.selectedTarget = null;
+        this.selectedDestination = null;
+        this.numberOfTurns = 0;
+
+        this.scores = [];
+        for(var i=0; i<this.numberOfPlayers; i++) {
+            this.scores.push(0);
+        }
+
+        this.ui.setScoreOne(2);
+        this.ui.setScoreTwo(2);
+    
         this.next();
     }
 
@@ -433,8 +447,18 @@ function onDocumentMouseUp( event ) {
     }
 }
 
+function reset(event) {
+    if(event) {
+        event.preventDefault();
+    }
+
+    board.reset();
+    game.reset();
+}
+
 document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 document.addEventListener( 'mouseup', onDocumentMouseUp, false);
+document.getElementById("resetgame").addEventListener( 'click', reset, false);
 
 // Run the main loop
 function main(time) {
@@ -444,8 +468,8 @@ function main(time) {
     renderer.render( scene, camera );
 }
 
+reset();
 requestAnimationFrame( main );
-game.start();
 },{"./board.js":1,"./colors.js":2,"./game.js":3,"./player.js":5,"./token.js":6}],5:[function(require,module,exports){
 /*jshint esversion: 6 */
 const Colors = require('./colors.js').Colors;
@@ -551,23 +575,18 @@ class Token extends THREE.Mesh {
     updateColor() {
         var color = Colors.Token;
         if(this.selected) {
-            console.log("Selected");
             color = Colors.SelectedToken;
         } else if(this.highlighted) {
-            console.log("Highlighted");
             color = Colors.HighlightedToken;
         } else {
             switch(this.state) {
                 case TokenState.Occupied:
-                    console.log("Occupied");
                     color = this.occupant.color;
                     break;
                 case TokenState.Selected:
-                    console.log("Selected State");
                     color = Colors.SelectedToken;
                     break;
                 default:
-                    console.log("Default");
                     break;
             }
         }

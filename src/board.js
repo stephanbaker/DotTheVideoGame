@@ -12,6 +12,16 @@ class Board extends THREE.Object3D {
         this.height = this.width;
         this.tokenSize = (this.width * 0.9) / this.size;
         this.spacing = (this.width * 0.1) / this.size;
+        this.reset();
+        this.position.x -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+        this.position.y -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
+    }
+
+    reset() {
+        while(this.children.length > 0) {
+            this.remove(this.children[0]);
+        }
+        
         this.tokens = [];
         for(var i=0; i<this.size; i++) {
             for(var j=0; j<this.size; j++) {
@@ -25,9 +35,6 @@ class Board extends THREE.Object3D {
                 this.add( token );
             }
         }
-
-        this.position.x -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
-        this.position.y -= (this.tokenSize + this.spacing) * ((this.size - 1) / 2);
     }
 
     getTokens() {
@@ -110,7 +117,11 @@ class Board extends THREE.Object3D {
             return;
         }
 
-        window.setTimeout(() => {
+        if(this.constructionTimeout) {
+            window.clearTimeout(this.constructionTimeout);
+        }
+
+        this.constructionTimeout = window.setTimeout(() => {
             var corner1 = 0;
             var corner2 = this.size - 1;
             var corner3 = this.size * (this.size - 1);
@@ -146,7 +157,6 @@ class Board extends THREE.Object3D {
             }, Math.random() * (moveTime - 200) + 200);
             move.easing = TWEEN.Easing.Quadratic.InOut;
             move.chain(resize);
-            // move.onComplete(() => {callback();});
             move.start();
         });
     }

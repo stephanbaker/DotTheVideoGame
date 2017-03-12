@@ -16,27 +16,31 @@ class Game {
     constructor(numberOfPlayers, board) {
         this.numberOfPlayers = numberOfPlayers;
         this.board = board;
-        this.playerIndex = 0;
-        this.state = states.StartGame;
-        this.selectedTarget = null;
-        this.selectedDestination = null;
-        this.numberOfTurns = 0;
         this.ui = new UI();
         this.ui.setBackgroundColor(Colors.Background);
         this.ui.setBaseTextColor(Colors.PrimaryText);
-
-        this.scores = [];
-        for(var i=0; i<numberOfPlayers; i++) {
-            this.scores.push(0);
-        }
         
-        this.ui.setMessage(this.state);
         this.ui.setMessageColor(Colors.PrimaryText);
         this.ui.setScoreOneColor(getPlayer(0).color);
         this.ui.setScoreTwoColor(getPlayer(1).color);
     }
 
-    start() {
+    reset() {
+        this.playerIndex = 0;
+        this.state = states.StartGame;
+        this.ui.setMessage(this.state);
+        this.selectedTarget = null;
+        this.selectedDestination = null;
+        this.numberOfTurns = 0;
+
+        this.scores = [];
+        for(var i=0; i<this.numberOfPlayers; i++) {
+            this.scores.push(0);
+        }
+
+        this.ui.setScoreOne(2);
+        this.ui.setScoreTwo(2);
+    
         this.next();
     }
 

@@ -67,8 +67,18 @@ function onDocumentMouseUp( event ) {
     }
 }
 
+function reset(event) {
+    if(event) {
+        event.preventDefault();
+    }
+
+    board.reset();
+    game.reset();
+}
+
 document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 document.addEventListener( 'mouseup', onDocumentMouseUp, false);
+document.getElementById("resetgame").addEventListener( 'click', reset, false);
 
 // Run the main loop
 function main(time) {
@@ -78,5 +88,5 @@ function main(time) {
     renderer.render( scene, camera );
 }
 
+reset();
 requestAnimationFrame( main );
-game.start();
