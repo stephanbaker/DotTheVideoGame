@@ -67,18 +67,31 @@ function onDocumentMouseUp( event ) {
     }
 }
 
-function reset(event) {
-    if(event) {
-        event.preventDefault();
-    }
-
+function reset() {
     board.reset();
     game.reset();
 }
 
+function confirmReset(event) {
+    if(event) event.preventDefault();
+    if(game.numberOfTurns === 0) {
+        reset();
+        return;
+    }
+    if(confirm("Are you sure you want to start a new game?")) reset();
+}
+
 document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 document.addEventListener( 'mouseup', onDocumentMouseUp, false);
-document.getElementById("resetgame").addEventListener( 'click', reset, false);
+document.getElementById("resetgame").addEventListener( 'click', confirmReset, false);
+window.onload = function() {
+    window.addEventListener("beforeunload", function() {
+        if(game.numberOfTurns === 0) return;
+        var message = 'Are you sure you would like to leave this page?';
+        (event || window.event).returnValue = message;
+        return message;
+    });
+};
 
 // Run the main loop
 function main(time) {

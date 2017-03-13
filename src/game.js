@@ -162,6 +162,7 @@ class Game {
                 } else {
                     this.playerIndex = (this.playerIndex + 1) % this.numberOfPlayers;
                     this.state = states.SelectToken;
+                    this.numberOfTurns++;
                 }
                 break;
             case states.GameOver:
