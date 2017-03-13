@@ -356,10 +356,13 @@ class Game {
                 repeat = true;
                 break;
             case states.EndTurn:
+                if(this.selectedDestination) {
+                    this.selectedDestination.unhighlight();
+                }
+
                 var boardInfo = this.board.getInfo();
                 this.ui.setScoreOne(boardInfo.score1);
                 this.ui.setScoreTwo(boardInfo.score2);
-                
                 if (boardInfo.vacancy === 0 || !this.allPlayersCanMove()) {
                     this.state = states.GameOver;
                     repeat = true;
