@@ -7,6 +7,7 @@ class Board extends THREE.Object3D {
     constructor(players, size, width, height) {
         super();
 
+        this.numberOfPlayers = players;
         this.size = size;
         this.width = Math.min(width, height); 
         this.height = this.width;
@@ -53,14 +54,14 @@ class Board extends THREE.Object3D {
         return null;
     }
 
-    getNeighbors(token) {
+    getNeighbors(token, distance=1) {
         if (!token) {
             return [];
         }
 
         var neighbors = [];
-        for(var x = Math.max(0, token.location.x - 1); x <= Math.min(this.size-1, token.location.x + 1); x++) {
-            for(var y = Math.max(0, token.location.y - 1); y <= Math.min(this.size-1, token.location.y + 1); y++) {
+        for(var x = Math.max(0, token.location.x - distance); x <= Math.min(this.size-1, token.location.x + distance); x++) {
+            for(var y = Math.max(0, token.location.y - distance); y <= Math.min(this.size-1, token.location.y + distance); y++) {
                 if (x == token.location.x && y == token.location.y) {
                     continue;
                 }
@@ -104,16 +105,29 @@ class Board extends THREE.Object3D {
         return info;
     }
 
-    getPlayerOccupiedCount(player) {
-        var count = 0;
-        if(this.tokens) {
-            this.tokens.forEach((token) => {
-                if (token.state == TokenState.Occupied && token.occupant == player) {
-                    count++;
-                }
-            });
+    playerCanMove(player) {
+        if(!this.tokens) {
+            return false;
         }
-        return count;
+
+        for(var t=0; t<this.tokens.length; t++) {
+            var token = this.tokens[t];
+            if(token.occupant != player) {
+                continue;
+            }
+
+            var neighbors = this.getNeighbors(token, 2);
+            if(neighbors) {
+                for(var n=0; n<neighbors.length; n++) {
+                    var neighbor = neighbors[n];
+                    if(neighbor.state == TokenState.Vacant) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     construct(callback, duration = 1000) { 

@@ -87,15 +87,6 @@ class Game {
         
     }
 
-    allPlayersCanMove() {
-        for(var pindex=0; pindex<this.numberOfPlayers; pindex++) {
-            if (this.board.getPlayerOccupiedCount(getPlayer(pindex)) == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     printState(hint) {
         var p = getPlayer(this.playerIndex);
         console.log("State: ", p.name, this.state, hint);
@@ -111,7 +102,6 @@ class Game {
                     this.printState(hint);
                     this.ui.setMessage(this.state);
                 });
-                // this.state = states.SelectToken;
                 return;
             case states.SelectToken:
                 if(!token || token.state == TokenState.Vacant || !this.tokenOwnedByCurrentPlayer(token)) {
@@ -152,6 +142,8 @@ class Game {
                 repeat = true;
                 break;
             case states.EndTurn:
+                this.numberOfTurns++;
+                
                 if(this.selectedDestination) {
                     this.selectedDestination.unhighlight();
                 }
@@ -159,13 +151,16 @@ class Game {
                 var boardInfo = this.board.getInfo();
                 this.ui.setScoreOne(boardInfo.score1);
                 this.ui.setScoreTwo(boardInfo.score2);
-                if (boardInfo.vacancy === 0 || !this.allPlayersCanMove()) {
+
+                var nextPlayerIndex = (this.playerIndex + 1) % this.numberOfPlayers;
+                var nextPlayer = getPlayer(nextPlayerIndex);
+                var playerCanMove = this.board.playerCanMove(nextPlayer);
+                if (!playerCanMove) {
                     this.state = states.GameOver;
                     repeat = true;
                 } else {
-                    this.playerIndex = (this.playerIndex + 1) % this.numberOfPlayers;
+                    this.playerIndex = nextPlayerIndex;
                     this.state = states.SelectToken;
-                    this.numberOfTurns++;
                 }
                 break;
             case states.GameOver:
